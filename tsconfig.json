@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",//输出目录
+    "target": "es5",
+    "lib": ["es2015"],
+    "module": "commonjs",
+    "declaration": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowJs": false,
+    "newLine": "LF"
+  },
+  "formatCodeOptions": {
+    "indentSize": 2,
+    "tabSize": 2
+  }
+}

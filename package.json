@@ -1,0 +1,41 @@
+{
+  "name": "ngy",
+  "version": "0.0.1",
+  "description": "link your package to your repos",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "rm -rf ./lib && tsc"
+  },
+  "bin": {
+    "ngy": "lib/ngy.js"
+  },
+  "author": "mayu888",
+  "dependencies": {
+    "chokidar": "^3.5.3",
+    "colors": "^1.4.0",
+    "cross-spawn": "^7.0.3",
+    "debounce": "^1.2.1",
+    "find-parent-dir": "^0.3.1",
+    "fs-extra": "^10.0.0",
+    "npm-packlist": "^3.0.0",
+    "react-dev-utils": "^12.0.0",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/find-parent-dir": "^0.3.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^17.0.10",
+    "@types/npm-packlist": "^1.1.2",
+    "@types/react-dev-utils": "^9.0.10",
+    "@types/yargs": "^17.0.8",
+    "ts-clean-built": "^1.1.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.5"
+  },
+  "license": "MIT",
+  "files": [
+    "lib",
+    "LICENSE.MD",
+    "README.MD"
+  ]
+}
