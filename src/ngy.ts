@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import yargs from 'yargs';
 import packlist from 'npm-packlist';
-import 'colors';
+import colors from 'colors/safe';
 
 import { writeFile, getPackageData, isDir } from './utils';
 import { exclude, workDir, getPackageStorePath, storeDir, getSrcPath, packageJsonName, publishConfigJsonName } from './path';
@@ -64,7 +64,7 @@ const linkCallback = async (packageName: string,packageStorePath: string, entry:
     fs.remove(path.join(workDir(),entry,packageName)),
   ]);
   if(!config[packageName]){
-    return log(`${packageName} is not publish!`);
+    return log(colors.yellow(`${packageName} is not publish!`));
   }
   const entryDirName = config[packageName].entry;
   const entryDir = path.join(packageStorePath,entryDirName);
@@ -84,30 +84,30 @@ yargs(process.argv.slice(2))
   command: 'publish',
   describe: 'Publish package in local repo',
   handler: async (argv) => {
-    log('publishing...'.yellow);
+    log(colors.yellow('publishing...'));
     const entry = (argv.entry || 'src') as string;
     const folder: string = (argv._[1] || '') as string;
     const packageStorePath: string = await getPackageStorePath(path.join(workDir(),folder));
     await publishCallback(path.join(workDir(),folder),packageStorePath, entry);
-    log('publish success!'.green);
+    log(colors.green('publish success!'));
   },
 })
 .command({
   command: 'link',
   describe: 'link package in local repo',
   handler: async (argv) => {
-    log('linking...'.yellow);
+    log(colors.yellow('linking...'));
     const entry: string = (argv.entry || 'src') as string;
     const packageName: string = argv._[1] as string;
     if(!packageName){
-      return log('must have packageName!'.red);
+      return log(colors.red('must have packageName!'));
     };
     const packageStorePath = path.join(storeDir(),packageName);
     if(!fs.existsSync(packageStorePath)){
-      return log(`${packageStorePath} is not exist,are you sure it has been publish?`.red);
+      return log(colors.red(`${packageStorePath} is not exist,are you sure it has been publish?`));
     }
     await linkCallback(packageName,packageStorePath,entry);
-    log('link success!'.green);
+    log(colors.green('link success!'));
   },
 })
 .command({
@@ -117,21 +117,21 @@ yargs(process.argv.slice(2))
     const { name } = await getPackageData(workDir());
     const entry = await getEntry(name);
     const files = argv._.slice(1) as string[];
-    log(`add paths:${files[0]}...`.yellow);
+    log(colors.yellow(`add paths:${files[0]}...`));
     const srcPaths: string[] = await getSrcPath(files, entry);
     const storePaths: string[] = await getStorePath(srcPaths);
     const repoPaths: string[] = await getRepoPath(srcPaths,name);
     if(storePaths.length !== files.length || repoPaths.length !== files.length) return;
     await Promise.all(files.map(async (file: string,index: number) =>  writeFile(file,storePaths[index])));
     await Promise.all(files.map(async (file: string,index: number) =>  writeFile(file,repoPaths[index])));
-    log('success!'.green);
+    log(colors.green('success!'));
   }, 
 })
 .command({
   command: 'delete',
   describe: 'delete files in local repo',
   handler: async (argv) => {
-    log(`delete paths:${argv._.slice(1)[0]}...`.yellow);
+    log(colors.yellow(`delete paths:${argv._.slice(1)[0]}...`));
     const { name } = await getPackageData(workDir());
     const entry = await getEntry(name);
     const srcPaths: string[] = await getSrcPath(argv._.slice(1) as string[],entry);
@@ -139,44 +139,44 @@ yargs(process.argv.slice(2))
     const repoPaths: string[] = await getRepoPath(srcPaths,name);
     await Promise.all(storePaths.map((storePath: string) => fs.remove(storePath)));
     await Promise.all(repoPaths.map((repoPath: string) => fs.remove(repoPath)));
-    log('success!'.green);
+    log(colors.green('success!'));
   }, 
 })
 .command({
   command: 'unlink',
   describe: 'unlink package in local repo',
   handler: async (argv) => {
-    log('unlinking...'.green);
+    log(colors.green('unlinking...'));
     const packageName = argv._[1] as string;
     if(!packageName){
-      return log('must input packageName'.red);
+      return log(colors.red('must input packageName'));
     }
     const packageConfig = await fs.readJson(path.join(storeDir(),publishConfigJsonName));
     if(!packageConfig[packageName]){
-      return log(`${packageName} is not link!`.red)
+      return log(colors.red(`${packageName} is not link!`))
     }
     const linkIndex = packageConfig[packageName].links.findIndex((link: Link) => link.repo === workDir());
     if(linkIndex < 0){
-      return log(`此系统并没有链接到${packageName}`.red);
+      return log(colors.red(`此系统并没有链接到${packageName}`));
     }
     const linkInfo = (packageConfig[packageName].links)[linkIndex];
     await fs.remove(path.join(workDir(),linkInfo.entry,packageName));
     packageConfig[packageName].links = packageConfig[packageName].links.filter((_: Link, index: number) => index !== linkIndex);
     await fs.writeJson(path.join(path.join(storeDir(),publishConfigJsonName)),packageConfig,{ spaces: 2 });
-    log(`unlink ${packageName} success!`.green);
+    log(colors.green(`unlink ${packageName} success!`));
   }
 })
 .command({
   command: 'unpublish',
   describe: 'unpublish package in local repo',
   handler: async (argv) => {
-    log('unpublishing...'.yellow);
+    log(colors.yellow('unpublishing...'));
     const folder: string = (argv._[1] || '') as string;
     const packageStorePath: string = await getPackageStorePath(path.join(workDir(),folder));
     const { name } = await getPackageData(workDir());
     const packageConfig = (await fs.readJson(path.join(storeDir(),publishConfigJsonName)))
     if(!packageConfig[name]){
-      return log('package is not published'.yellow);
+      return log(colors.yellow('package is not published'));
     }
     delete packageConfig[name];
     await Promise.all([
