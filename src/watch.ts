@@ -6,7 +6,7 @@ const spawn = require('cross-spawn');
 const debounce = require('debounce');
 const clearConsole = require('react-dev-utils/clearConsole');
 
-export const watch = () => {
+export const watch = (watchPath?: string, ignored?:string[]) => {
   clearConsole();
   let init = true;
   let store: { path: string, event: string }[] = [];
@@ -41,15 +41,9 @@ export const watch = () => {
   }, 500);
 
   chokidar
-    .watch(path.join(process.cwd(), 'src'),
+    .watch(watchPath || path.join(process.cwd(),'src'),
       {
-        ignored: [
-          '**.test.tsx',
-          '**/__mocks__',
-          '**/__snapshots__',
-          '**/__snapshots__/**.snap',
-          '**/__mocks__/**.tsx'
-        ],
+        ignored: ignored || [],
       })
     .unwatch()
     .on('all', (event: string, path: string) => {

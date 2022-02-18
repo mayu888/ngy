@@ -1,6 +1,6 @@
 {
   "name": "ngy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "link your package to your repos",
   "main": "lib/index.js",
   "scripts": {
