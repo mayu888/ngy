@@ -8,6 +8,7 @@ const clearConsole = require('react-dev-utils/clearConsole');
 
 export const watch = (watchPath?: string, ignored?:string[]) => {
   clearConsole();
+  console.log('start watch...');
   let init = true;
   let store: { path: string, event: string }[] = [];
   const shell = debounce(() => {
