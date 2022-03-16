@@ -6,7 +6,7 @@ import yargs from 'yargs';
 import packlist from 'npm-packlist';
 import colors from 'colors/safe';
 
-import { writeFile, getPackageData, isDir } from './utils';
+import { writeFile, getPackageData } from './utils';
 import { exclude, workDir, getPackageStorePath, storeDir, getSrcPath, packageJsonName, publishConfigJsonName } from './path';
 
 const log = console.log;
@@ -121,9 +121,18 @@ yargs(process.argv.slice(2))
     const srcPaths: string[] = await getSrcPath(files, entry);
     const storePaths: string[] = await getStorePath(srcPaths);
     const repoPaths: string[] = await getRepoPath(srcPaths,name);
-    if(storePaths.length !== files.length || repoPaths.length !== files.length) return;
+    if(storePaths.length !== files.length) return;
+    const updateRepoPromise:Promise<void | Error>[] = [];
+    files.forEach(async (file: string) =>  {
+      repoPaths.forEach(repo => {
+        updateRepoPromise.push(writeFile(file,repo));
+      });
+    });
     await Promise.all(files.map(async (file: string,index: number) =>  writeFile(file,storePaths[index])));
-    await Promise.all(files.map(async (file: string,index: number) =>  writeFile(file,repoPaths[index])));
+    await Promise.all(updateRepoPromise);
+    await Promise.all(files.map(async (file: string,index: number) =>  {
+      return repoPaths.map(repo => writeFile(file,repo));
+    }));
     log(colors.green('success!'));
   }, 
 })
@@ -157,7 +166,7 @@ yargs(process.argv.slice(2))
     }
     const linkIndex = packageConfig[packageName].links.findIndex((link: Link) => link.repo === workDir());
     if(linkIndex < 0){
-      return log(colors.red(`此系统并没有链接到${packageName}`));
+      return log(colors.red(`unlink ${packageName}`));
     }
     const linkInfo = (packageConfig[packageName].links)[linkIndex];
     await fs.remove(path.join(workDir(),linkInfo.entry,packageName));
