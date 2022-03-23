@@ -26,7 +26,7 @@ const getLinkFiles = async (packageName: string): Promise<Link[]> => {
   return config[packageName].links;
 };
 
-const getEntry = async (packageName: string): Promise<string> => {
+const getEntry = async (packageName: string): Promise<string[]> => {
   return (await fs.readJson(path.join(storeDir(),publishConfigJsonName)))[packageName].entry;
 };
 
@@ -40,7 +40,7 @@ const getRepoPath = async (srcPaths: string[],packageName: string): Promise<stri
   return linkRis.map((linkRi) => srcPaths.map(srcPath => path.join(linkRi.repo,linkRi.entry,packageName,srcPath))).flat();
 };
 
-const publishCallback = async (packagePath: string,packageStorePath: string, entry: string) => {
+const publishSetConfig = async (packagePath: string,packageStorePath: string, entry: string[]) => {
   await fs.ensureDir(packageStorePath);
   const { name } = await getPackageData(workDir());
   if(!fs.existsSync(path.join(storeDir(),publishConfigJsonName))){
@@ -50,6 +50,9 @@ const publishCallback = async (packagePath: string,packageStorePath: string, ent
     config[name] = { path: packagePath, entry, links: [] };
     await fs.writeJson(path.join(storeDir(),publishConfigJsonName),config,{ spaces: 2 });
   }
+}
+
+const publishCallback = async (packagePath: string,packageStorePath: string, entry: string) => {
   const publishFiles: string[] = await getSrcFiles(packagePath,entry);
   await Promise.all(publishFiles.map(async (publishFile: string) =>  writeFile(path.join(packagePath,entry,publishFile),path.join(packageStorePath,entry,publishFile))));
   await Promise.all([
@@ -66,8 +69,8 @@ const linkCallback = async (packageName: string,packageStorePath: string, entry:
   if(!config[packageName]){
     return log(colors.yellow(`${packageName} is not publish!`));
   }
-  const entryDirName = config[packageName].entry;
-  const entryDir = path.join(packageStorePath,entryDirName);
+  const entryDirNames: string[] = config[packageName].entry;
+  const entryDirs: string[] = entryDirNames.map((entryDirName: string) => path.join(packageStorePath,entryDirName));
   if(!(config[packageName].links.find((link: Link) => link.repo === workDir()))){
     config[packageName].links.push({ repo: workDir(), entry });
   }
@@ -76,7 +79,10 @@ const linkCallback = async (packageName: string,packageStorePath: string, entry:
     fs.writeJson(path.join(storeDir(), publishConfigJsonName),config,{ spaces: 2 }),
   ];
   await Promise.all(waitingPromise);
-  await Promise.all((await getSrcFiles(entryDir)).map((srcPath: string) => writeFile(path.join(entryDir,srcPath),path.join(workDir(),entry,packageName,entryDirName,srcPath))));
+  const srcPromises = entryDirs.map(async (entryDir,index) => {
+    return (await getSrcFiles(entryDir)).map(async (srcPath) => await writeFile(path.join(entryDir,srcPath),path.join(workDir(),entry,packageName,entryDirNames[index],srcPath)))
+  });
+  await Promise.all(srcPromises);
 };
 
 yargs(process.argv.slice(2))
@@ -85,10 +91,14 @@ yargs(process.argv.slice(2))
   describe: 'Publish package in local repo',
   handler: async (argv) => {
     log(colors.yellow('publishing...'));
-    const entry = (argv.entry || 'src') as string;
+    let entries = (argv.entry || 'src') as string | string[];
+    if(typeof(entries) === 'string'){
+      entries = [entries];
+    }
     const folder: string = (argv._[1] || '') as string;
     const packageStorePath: string = await getPackageStorePath(path.join(workDir(),folder));
-    await publishCallback(path.join(workDir(),folder),packageStorePath, entry);
+    await publishSetConfig(path.join(workDir(),folder),packageStorePath, entries);
+    await Promise.all(entries.map(async(entry: string) => await publishCallback(path.join(workDir(),folder),packageStorePath, entry)));
     log(colors.green('publish success!'));
   },
 })

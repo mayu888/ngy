@@ -19,6 +19,6 @@ export const getPackageStorePath = async (workDir: string): Promise<string> => {
   return path.join(storeDir(),name);
 };
 
-export const getSrcPath = (files: string[],entry: string): string[] => {
+export const getSrcPath = (files: string[],entry: string[]): string[] => {
   return files.map(filePath => getSrcNextPath(filePath,entry));
 };

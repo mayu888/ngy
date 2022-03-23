@@ -31,7 +31,7 @@ export const writeFile = async (src: string,dest: string) :Promise<void | Error>
   });
 };
 
-export const getSrcNextPath = (path: string,entry: string): string => {
-  const srcIndex = path.split('/').findIndex((seg) => seg === entry);
+export const getSrcNextPath = (path: string,entry: string[]): string => {
+  const srcIndex = path.split('/').findIndex((seg) => !!entry.find(en => en === seg));
   return path.split('/').slice(srcIndex).join('/');
 };

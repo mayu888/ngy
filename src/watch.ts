@@ -6,8 +6,8 @@ const spawn = require('cross-spawn');
 const debounce = require('debounce');
 const clearConsole = require('react-dev-utils/clearConsole');
 
-export const watch = (watchPath?: string, ignored?:string[]) => {
-  clearConsole();
+export const watch = (watchPath?: string | string[], ignored?:string[]) => {
+  // clearConsole();
   console.log('start watch...');
   let init = true;
   let store: { path: string, event: string }[] = [];
