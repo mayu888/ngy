@@ -41,31 +41,31 @@ ngy add path（修改文件的路径）这个脚本可以根据自己的代码�
 
 然后打开home目录，显示隐藏文件，点开.ngy
 
-![image-20220323143423643](/Users/mayu/Library/Application Support/typora-user-images/image-20220323143423643.png)
+![image-20220323143423643](/README/image-20220323143423643.png)
 
 已经有了这个包
 
 同时，config.json文件是关于.ngy所有包的配置信息
 
-![image-20220323143545015](/Users/mayu/Library/Application Support/typora-user-images/image-20220323143545015.png)
+![image-20220323143545015](/README/image-20220323143545015.png)
 
 **entry**是包的入口，默认是src，**links**是link的应用路径
 
 接下来我们在某个应用中link brainbrowser这个包
 
-![image-20220323143250539](/Users/mayu/Library/Application Support/typora-user-images/image-20220323143250539.png)
+![image-20220323143250539](/README/image-20220323143250539.png)
 
 此时config.json文件中对应的包配置已经更新
 
-![image-20220323143649893](/Users/mayu/Library/Application Support/typora-user-images/image-20220323143649893.png)
+![image-20220323143649893](/README/image-20220323143649893.png)
 
 **repo**为我们的应用路劲，**entry**为我们应用的入口。ngiq-research-client src目录下已经有了这个包
 
-![image-20220323143945514](/Users/mayu/Library/Application Support/typora-user-images/image-20220323143945514.png)
+![image-20220323143945514](/README/image-20220323143945514.png)
 
 同时，webpack dev的配置中增加alias
 
-![image-20220323144224579](/Users/mayu/Library/Application Support/typora-user-images/image-20220323144224579.png)
+![image-20220323144224579](/README/image-20220323144224579.png)
 
 这样我们就完成了最终配置，直接启动应用就ok了。
 
