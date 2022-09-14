@@ -1,10 +1,11 @@
 {
   "name": "ngy",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "link your package to your repos",
   "main": "lib/index.js",
   "scripts": {
-    "build": "rm -rf ./lib && tsc"
+    "build": "rm -rf ./lib && tsc",
+    "watch": "node --loader ts-node/esm src/index.ts"
   },
   "bin": {
     "ngy": "lib/ngy.js"
@@ -29,6 +30,7 @@
     "@types/react-dev-utils": "^9.0.10",
     "@types/yargs": "^17.0.8",
     "ts-clean-built": "^1.1.0",
+    "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.5.5"
   },
