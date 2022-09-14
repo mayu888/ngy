@@ -88,7 +88,7 @@ const linkCallback = async (packageName: string,packageStorePath: string, entry:
 yargs(process.argv.slice(2))
 .command({
   command: 'publish',
-  describe: 'Publish package in local repo',
+  describe: 'publish package to file store',
   handler: async (argv) => {
     log(colors.yellow('publishing...'));
     let entries = (argv.entry || 'src') as string | string[];
@@ -187,7 +187,7 @@ yargs(process.argv.slice(2))
 })
 .command({
   command: 'unpublish',
-  describe: 'unpublish package in local repo',
+  describe: 'remove package in file store',
   handler: async (argv) => {
     log(colors.yellow('unpublishing...'));
     const folder: string = (argv._[1] || '') as string;
